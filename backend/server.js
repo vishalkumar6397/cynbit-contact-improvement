@@ -6,10 +6,27 @@ require("dotenv").config();
 
 const app = express();
 
+// Allowed frontend origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://cynbit-contact-improvement.vercel.app"
+];
+
 // Middleware
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without origin (e.g. Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
 
 app.use(express.json());
 
@@ -29,7 +46,8 @@ const inquirySchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
     company: {
       type: String,
@@ -41,7 +59,8 @@ const inquirySchema = new mongoose.Schema(
     },
     message: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     }
   },
   { timestamps: true }
@@ -57,13 +76,12 @@ app.get("/", (req, res) => {
   });
 });
 
-
-
 // Submit Inquiry API
 app.post("/api/inquiries", async (req, res) => {
   try {
     const { name, email, phone, company, industry, message } = req.body;
 
+    // Required fields validation
     if (!name || !email || !phone || !message) {
       return res.status(400).json({
         success: false,
@@ -71,6 +89,7 @@ app.post("/api/inquiries", async (req, res) => {
       });
     }
 
+    // Email validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({
         success: false,
@@ -78,6 +97,7 @@ app.post("/api/inquiries", async (req, res) => {
       });
     }
 
+    // Phone validation
     if (!/^[0-9]{10}$/.test(phone)) {
       return res.status(400).json({
         success: false,
@@ -85,6 +105,7 @@ app.post("/api/inquiries", async (req, res) => {
       });
     }
 
+    // Save inquiry in MongoDB
     const inquiry = await Inquiry.create({
       name,
       email,
@@ -94,16 +115,16 @@ app.post("/api/inquiries", async (req, res) => {
       message
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Inquiry submitted successfully!",
       data: inquiry
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Inquiry submission error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Something went wrong"
     });
@@ -115,19 +136,20 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    if (process.env.MONGO_URI) {
-      await mongoose.connect(process.env.MONGO_URI);
-      console.log("MongoDB Connected Successfully");
-    } else {
-      console.log("MongoDB URI not configured yet");
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is not configured");
     }
 
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected Successfully");
+
     app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
 
   } catch (error) {
-    console.error("Database connection failed:", error.message);
+    console.error("Server startup failed:", error.message);
+    process.exit(1);
   }
 };
 
