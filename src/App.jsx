@@ -2,6 +2,10 @@
 import { useState } from "react";
 import "./App.css";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:5000";
+
 function App() {
   const initialData = {
     name: "",
@@ -44,7 +48,9 @@ function App() {
     }
 
     if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        formData.email.trim()
+      )
     ) {
       newErrors.email = "Enter a valid email address";
     }
@@ -54,7 +60,8 @@ function App() {
     }
 
     if (formData.message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters";
+      newErrors.message =
+        "Message must be at least 10 characters";
     }
 
     setErrors(newErrors);
@@ -62,7 +69,6 @@ function App() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit inquiry to MongoDB through backend API
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess("");
@@ -73,7 +79,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/inquiries",
+        `${API_BASE_URL}/api/inquiries`,
         {
           method: "POST",
           headers: {
@@ -91,16 +97,20 @@ function App() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to submit inquiry");
+        throw new Error(
+          result.message || "Failed to submit inquiry"
+        );
       }
 
-      setSuccess("Thank you! Your inquiry has been submitted successfully.");
+      setSuccess(
+        "Thank you! Your inquiry has been submitted successfully."
+      );
 
       setFormData(initialData);
       setErrors({});
     } catch (error) {
       console.error("Submission error:", error);
-      setSuccess("");
+
       alert(
         error.message ||
           "Unable to submit inquiry. Please try again."
@@ -114,7 +124,10 @@ function App() {
     <div className="page">
       <div className="container">
         <h1>Let's Connect</h1>
-        <p>Tell us about your project. We'd love to hear from you.</p>
+
+        <p>
+          Tell us about your project. We'd love to hear from you.
+        </p>
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="form-grid">
@@ -195,7 +208,9 @@ function App() {
             {loading ? "Submitting..." : "Send Inquiry"}
           </button>
 
-          {success && <p className="success">{success}</p>}
+          {success && (
+            <p className="success">{success}</p>
+          )}
         </form>
       </div>
     </div>
