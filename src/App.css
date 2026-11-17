@@ -1,0 +1,152 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef3f3;
+  color: #222;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 50px 20px;
+}
+
+.container {
+  max-width: 1050px;
+  margin: auto;
+}
+
+h1 {
+  color: #00666b;
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.container > p {
+  color: #647174;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+form {
+  background: white;
+  padding: 40px;
+  border-radius: 28px;
+  box-shadow: 0 15px 35px #00000012;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 17px;
+  border: 1px solid #e1e8e8;
+  border-radius: 30px;
+  background: #f0f4f4;
+  font-size: 15px;
+  color: #222;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #888;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #00666b;
+  background: white;
+  box-shadow: 0 0 0 3px #00666b18;
+}
+
+textarea {
+  height: 150px;
+  resize: vertical;
+  border-radius: 20px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+small.error {
+  display: block;
+  color: #d62828;
+  margin-top: 6px;
+  font-size: 12px;
+  min-height: 14px;
+}
+
+button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 18px;
+  border: none;
+  border-radius: 35px;
+  background: #00666b;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #004e52;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success {
+  color: #138a22;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+@media (max-width: 650px) {
+  .page {
+    padding: 25px 15px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .full {
+    grid-column: auto;
+  }
+
+  form {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+}
